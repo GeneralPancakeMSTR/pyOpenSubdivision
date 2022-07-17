@@ -277,7 +277,7 @@ public:
         // ---- New Edges and Faces ----
         int origin = 0;
         int endpoint = 0;
-        // Each very MAY be connected to another 
+        // Each vert MAY be connected to another 
         // new_edges.reserve(nn_verts); // This would be nice but actually complicates things 
         new_edges.resize(nn_verts);
 

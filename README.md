@@ -3,6 +3,9 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
 
 <div align="center"><img src="attachments/README/cube_level_3.png" width="500"/></div>
 
+## Code
+- [ ] Discuss 
+
 ## General requirements:
 - [CMake](http://www.cmake.org)
 - [Python 3.8+](https://www.python.org/downloads/)
@@ -100,7 +103,6 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
 1. Install [General Requirements](#general-requirements).
 2. Install [GLFW](https://www.glfw.org/) (Optional, but makes building `OpenSubdiv` smoother)   
    - Download the [GLFW Windows pre-compiled binaries](https://www.glfw.org/download.html) (64-bit), and unzip file. 
-   - (**This might be unnecessary**) In the unzipped folder, create a `lib` directory in it, and put the `lib` files corresponding to your version of Visual Studio into it (e.g. for Visual Studio 2022, copy the files from `lib-vc2022/` into `/lib`) 
    
 3. Clone [OpenSubdiv](https://github.com/PixarAnimationStudios/OpenSubdiv) 
     ```
@@ -209,5 +211,9 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
         ...
         ```
 
+# ToDo 
+## Building on OS X
+- [ ] Implement 
 
-
+## Error Handling and Crash Prevention 
+- [ ] Implement 

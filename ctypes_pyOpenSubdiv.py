@@ -1,7 +1,8 @@
 import ctypes
-
 import sys
 from sys import platform 
+import numpy as np
+
 if platform == 'linux' or platform == 'linux2':
     OpenSubdiv_clib = ctypes.cdll.LoadLibrary('./ctypes_OpenSubdiv.so')
 elif platform == 'darwin':
@@ -11,8 +12,6 @@ elif platform == 'win32':
     import os 
     here = os.path.dirname(__file__).replace('\\','/') 
     OpenSubdiv_clib = ctypes.CDLL(os.path.join(here,"ctypes_OpenSubdiv.dll"))
-
-import numpy as np
 
 def pyOpenSubdiv(subdivision_level,vertices,faceVerts,vertsPerFace):    
     ################ Subdivide ################    
