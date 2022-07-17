@@ -3,7 +3,7 @@
 
 // This actually works? 
 // https://stackoverflow.com/a/25155315/2391876
-#ifdef WIN32
+#ifdef _WIN32 // This is what Visual Studio defines 
 #define DLLEXPORT __declspec(dllexport)
 // This resolves the "M_PI (pi) is not defined properly" error. 
 // (https://stackoverflow.com/questions/6563810/m-pi-works-with-math-h-but-not-with-cmath-in-visual-studio)
@@ -42,7 +42,7 @@
 //   - DO NOT have MSYS installed. Somehow CMake seeks it out and finds it, and the build process doesn't go well. 
 //   - The exact build command I used was (vary appropriately for paths, e.g. glfw, and Visual Studio Version) 
 // 
-//      cmake ^ -DCMAKE_GENERATOR_PLATFORM=x64 -G "Visual Studio 17 2022" ^ -D NO_PTEX=1 -D NO_DOC=1 ^ -D NO_OMP=1 -D NO_TBB=1 -D NO_CUDA=1 -D NO_OPENCL=1 -D NO_CLEW=1 ^ -D "GLFW_LOCATION=C:/Users/rmigliori/Desktop/cpp/glfw-3.3.7.bin.WIN64/glfw-3.3.7.bin.WIN64" ^ ..
+//      cmake ^ -DCMAKE_GENERATOR_PLATFORM=x64 -G "Visual Studio 17 2022" ^ -D NO_PTEX=1 -D NO_DOC=1 ^ -D NO_OMP=1 -D NO_TBB=1 -D NO_CUDA=1 -D NO_OPENCL=1 -D NO_CLEW=1 ^ -D "GLFW_LOCATION=C:/Users/<username>/Desktop/cpp/glfw-3.3.7.bin.WIN64/glfw-3.3.7.bin.WIN64" ^ ..
 // 
 //   - Build Step 2, Install build (run this in an administrator console): 
 // 

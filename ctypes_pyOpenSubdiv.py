@@ -10,7 +10,7 @@ elif platform == 'darwin':
 elif platform == 'win32':
     import os 
     here = os.path.dirname(__file__).replace('\\','/') 
-    OpenSubdiv_clib = ctypes.CDLL(os.path.join(here,"ctypes_pyOpenSubdiv.dll"))
+    OpenSubdiv_clib = ctypes.CDLL(os.path.join(here,"ctypes_OpenSubdiv.dll"))
 
 import numpy as np
 

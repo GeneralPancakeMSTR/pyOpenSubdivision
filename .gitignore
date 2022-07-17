@@ -1,0 +1,9 @@
+glfw*
+glfw*/
+OpenSubdiv/
+.vscode/
+.vs/
+
+!ctypes_OpenSubdiv/
+ctypes_OpenSubdiv/x64/
+ctypes_OpenSubdiv/.vs/

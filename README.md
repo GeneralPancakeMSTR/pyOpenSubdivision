@@ -1,7 +1,7 @@
 # pyOpenSubdivision
-A Python wrapper for the [far](https://github.com/PixarAnimationStudios/OpenSubdiv/tree/release/opensubdiv/far) topology refiner implemented by the [OpenSubdiv C++ Library](https://github.com/PixarAnimationStudios/OpenSubdiv).
+A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library/ctypes.html)) for the [OpenSubdiv C++ Library](https://github.com/PixarAnimationStudios/OpenSubdiv) [far](https://github.com/PixarAnimationStudios/OpenSubdiv/tree/release/opensubdiv/far) topology refiner.
 
-# [`ctypes`](https://docs.python.org/3/library/ctypes.html) Implementation
+<div align="center"><img src="attachments/README/cube_level_3.png" width="500"/></div>
 
 ## General requirements:
 - [CMake](http://www.cmake.org)
@@ -99,8 +99,8 @@ A Python wrapper for the [far](https://github.com/PixarAnimationStudios/OpenSubd
 ## Building on Windows ([Visual Studio](https://visualstudio.microsoft.com/))
 1. Install [General Requirements](#general-requirements).
 2. Install [GLFW](https://www.glfw.org/) (Optional, but makes building `OpenSubdiv` smoother)   
-   - Download the [GLFW Windows pre-compiled binaries](https://www.glfw.org/download.html) (64-bit).
-   - (**Try without doing this**) Unzip the downloaded `GLFW` folder, create a `lib` directory in it, and put the `lib` files corresponding to your version of Visual Studio into it (e.g. for Visual Studio 2022, copy the files from `lib-vc2022/` into `/lib`) 
+   - Download the [GLFW Windows pre-compiled binaries](https://www.glfw.org/download.html) (64-bit), and unzip file. 
+   - (**This might be unnecessary**) In the unzipped folder, create a `lib` directory in it, and put the `lib` files corresponding to your version of Visual Studio into it (e.g. for Visual Studio 2022, copy the files from `lib-vc2022/` into `/lib`) 
    
 3. Clone [OpenSubdiv](https://github.com/PixarAnimationStudios/OpenSubdiv) 
     ```
@@ -137,28 +137,77 @@ A Python wrapper for the [far](https://github.com/PixarAnimationStudios/OpenSubd
    - Create a new, blank, `C++` project in Visual Studio. 
    - Configure to target `Release` and `x64`. 
    - Add `ctypes_subdivider.cpp` to the `Source Files` by right-clicking `Source Files` in the `Solution Explorer`, selecting `Add->Existing Item...`, and navigating to `ctypes_subdivider.cpp` in the browser window. 
+   - **Note**: It is also possible to make a C++ project in this directory (the repository) with a `Source.cpp` file containing just the line 
+        ```c++
+        #include "../ctypes_subdivider.cpp"
+        ```
+        The following setup steps remain the same. 
 7. Configure solution properties (for All builds, All platforms) 
+
    1. Set the solution Configuration Type to `Dynamic Library (.dll)`
+        <div align="center"><img src="attachments/README/2022-07-16-19-32-29.png" width="500"/></div>
+
         ```
         Right-click Solution -> Properties -> Configuration Properties -> Configuration Type -> Dynamic Library (.dll)
         ```
-   2. Add `OpenSubdiv\include` to Additional Include Directories
+   2. Add `OpenSubdiv\include` to Additional Include Directories        
+        <div align="center"><img src="attachments/README/2022-07-16-19-40-06.png" width="500"/></div>
+
         ```
         Right-click Solution -> C/C++ -> General -> Additional Include Directories -> C:\Program Files\OpenSubdiv\include
         ```
    3. Add `Opensubdiv\libs` to Additional Library Directories
+        <div align="center"><img src="attachments/README/2022-07-16-19-37-28.png" width="500"/></div>
+
         ```
         Right-click Solution -> Properties -> Linker -> General -> Additional Library Directories -> C:\Program Files\OpenSubdiv\lib
         ```
    4. Add `OpenSubdiv` library binaries to [linker's Additional Dependencies](https://stackoverflow.com/questions/42867030/c-dll-unresolved-external-symbol/42867190#42867190) 
+        <div align="center"><img src="attachments/README/2022-07-16-19-38-19.png" width="500"/></div>
+
         ```
         Right-click Solution -> Properties -> Linker -> Input -> Additional Dependencies -> osdCPU.lib;oscGPU.lib
         ```
-8. Build the solution (`Build -> Build Solution`), which should create a `ctypes_pyOpenSubdiv.dll` file at `<path to solution>\ctypes_pyOpenSubdiv\x64\Release`. 
-9. [ ] Test 
-
-    
-
+8. Build the solution (`Build -> Build Solution`), which should create a `ctypes_OpenSubdiv.dll` file at `x64\Release\`. 
+9. Test:
+   - Move the `ctypes_pyOpenSubdivision.dll` into the same directory as `ctypes_pyOpenSubdiv.py`.
+   - Run `ctypes_pyOpenSubdiv.py`
+        ```
+        $ python .\ctypes_pyOpenSubdiv.py
+        v [-0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
+        v [0.2777777910232544, -0.2777777910232544, 0.2777777910232544]  
+        v [-0.2777777910232544, 0.2777777910232544, 0.2777777910232544]  
+        v [0.2777777910232544, 0.2777777910232544, 0.2777777910232544]   
+        v [-0.2777777910232544, 0.2777777910232544, -0.2777777910232544] 
+        v [0.2777777910232544, 0.2777777910232544, -0.2777777910232544]  
+        v [-0.2777777910232544, -0.2777777910232544, -0.2777777910232544]
+        v [0.2777777910232544, -0.2777777910232544, -0.2777777910232544] 
+        v [0.0, 0.0, 0.5]
+        v [0.0, 0.5, 0.0]
+        ...
+        e [0, 14]
+        e [0, 25]
+        e [1, 15]
+        e [2, 17]
+        e [3, 16]
+        e [3, 18]
+        e [4, 20]
+        e [5, 19]
+        e [5, 21]
+        e [6, 23]
+        ...
+        f [0, 14, 8, 17]
+        f [14, 1, 15, 8]
+        f [8, 15, 3, 16]
+        f [17, 8, 16, 2]
+        f [2, 16, 9, 20]
+        f [16, 3, 18, 9]
+        f [9, 18, 5, 19]
+        f [20, 9, 19, 4]
+        f [4, 19, 10, 23]
+        f [19, 5, 21, 10]
+        ...
+        ```
 
 
 
