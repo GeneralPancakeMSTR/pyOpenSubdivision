@@ -1,16 +1,13 @@
 from setuptools import setup, find_packages
-import site
+# import distutils.sysconfig
 
-import distutils.sysconfig
-import os
-import sys
-
-NAME = 'pysubdivision'
+NAME = 'pyOpenSubdiv'
 VERSION = '0.0.1'
 DESCRIPTION = 'Python Catmull-Clark Subdivision.'
 LONG_DESCRIPTION = 'A Python wrapper for the OpenSubdiv C++ Library far topology refiner.'
 
-
+# import site
+# import sys
 # print(site.USER_BASE)
 # print(sys.prefix)
 setup(
@@ -21,7 +18,7 @@ setup(
     long_description = LONG_DESCRIPTION,
     packages = find_packages(),
     include_package_data=True,
-    package_data={'pysubdivision.clib':['*.so','*.dll']}, # https://stackoverflow.com/questions/70334648/how-to-correctly-install-data-files-with-setup-py
+    package_data={f'{NAME}.clib':['*.so','*.dll']}, # https://stackoverflow.com/questions/70334648/how-to-correctly-install-data-files-with-setup-py
     install_requires = ["numpy"],
     keywords = ['subdivision','opensubdiv','Catmull-Clark','hard-surface'],
     classifiers= [

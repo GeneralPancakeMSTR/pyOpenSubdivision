@@ -1,7 +1,7 @@
 import timeit 
 from itertools import chain
 
-from pysubdivision.pyOpenSubdiv import pyOpenSubdiv
+from pyOpenSubdiv.pysubdivision import pysubdivide
 
 verts = [
     [-0.5,-0.5, 0.5],
@@ -26,7 +26,7 @@ faces = [
 faceVerts = list(chain.from_iterable(faces))
 vertsPerFace = [len(face) for face in faces]
 
-new_mesh = pyOpenSubdiv(1,verts,faceVerts,vertsPerFace)
+new_mesh = pysubdivide(1,verts,faceVerts,vertsPerFace)
 
 for i,vert in enumerate(new_mesh['vertices']):
     print(f'v {vert}')

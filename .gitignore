@@ -4,7 +4,7 @@ OpenSubdiv/
 .vscode/
 .vs/
 build/
-pysubdivision.egg-info/
+pyOpenSubdiv.egg-info/
 
 !ctypes_OpenSubdiv/
 ctypes_OpenSubdiv/x64/

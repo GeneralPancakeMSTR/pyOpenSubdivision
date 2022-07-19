@@ -1,10 +1,10 @@
 import ctypes
 import numpy as np
 
-from pysubdivision.clib import load_library
+from pyOpenSubdiv.clib import load_library
 OpenSubdiv_clib = load_library.load_library()
 
-def pyOpenSubdiv(subdivision_level,vertices,faceVerts,vertsPerFace):    
+def pysubdivide(subdivision_level,vertices,faceVerts,vertsPerFace):
     """
     Documentation
     """
