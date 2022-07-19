@@ -1,19 +1,14 @@
 import ctypes
-import sys
-from sys import platform 
 import numpy as np
 
-if platform == 'linux' or platform == 'linux2':
-    OpenSubdiv_clib = ctypes.cdll.LoadLibrary('./ctypes_OpenSubdiv.so')
-elif platform == 'darwin':
-    # OSX 
-    pass
-elif platform == 'win32':
-    import os 
-    here = os.path.dirname(__file__).replace('\\','/') 
-    OpenSubdiv_clib = ctypes.CDLL(os.path.join(here,"ctypes_OpenSubdiv.dll"))
+from pysubdivision.clib import load_library
+OpenSubdiv_clib = load_library.load_library()
 
 def pyOpenSubdiv(subdivision_level,vertices,faceVerts,vertsPerFace):    
+    """
+    Documentation
+    """
+    
     ################ Subdivide ################    
     refine_topology = OpenSubdiv_clib.subdivider_refine_topology
     refine_topology.argtypes = [
@@ -87,62 +82,3 @@ def pyOpenSubdiv(subdivision_level,vertices,faceVerts,vertsPerFace):
         'faces' : np.ctypeslib.as_array(new_faces).tolist()
     }
     return new_mesh 
-
-if __name__=="__main__":
-    import timeit 
-    from itertools import chain
-    
-    verts = [
-        [-0.5,-0.5, 0.5],
-        [ 0.5,-0.5, 0.5],
-        [-0.5, 0.5, 0.5],
-        [ 0.5, 0.5, 0.5],
-        [-0.5, 0.5,-0.5],
-        [ 0.5, 0.5,-0.5],
-        [-0.5,-0.5,-0.5],
-        [ 0.5,-0.5,-0.5]
-    ]
-
-    faces = [
-        [0, 1, 3, 2],
-        [2, 3, 5, 4],
-        [4, 5, 7, 6],
-        [6, 7, 1, 0],
-        [1, 7, 5, 3],
-        [6, 0, 2, 4]
-        ]
-
-    faceVerts = list(chain.from_iterable(faces))
-    vertsPerFace = [len(face) for face in faces]
-
-    new_mesh = pyOpenSubdiv(1,verts,faceVerts,vertsPerFace)
-    
-    
-    
-    for i,vert in enumerate(new_mesh['vertices']):
-        print(f'v {vert}')
-        if(i>8):
-            print('...')
-            break
-
-    for i,edge in enumerate(new_mesh['edges']):
-        print(f'e {edge}')
-        if(i>8):
-            print('...')
-            break
-
-    for i,face in enumerate(new_mesh['faces']):
-        print(f'f {face}')
-        if(i>8):
-            print('...')
-            break
-
-    # Pretty fast? 
-    # print(timeit.timeit(lambda: pyOpenSubdiv(2,verts,faceVerts,vertsPerFace),number = 10000))
-
-    
-
-
-
-
-    
