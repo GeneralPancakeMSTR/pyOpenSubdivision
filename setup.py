@@ -22,7 +22,7 @@ setup(
     install_requires = ["numpy"],
     keywords = ['subdivision','opensubdiv','Catmull-Clark','hard-surface'],
     classifiers= [
-        "Development Status :: 0 - Alpha",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",        
         "Programming Language :: Python :: 3",        
         "Operating System :: Microsoft :: Windows",

@@ -4,6 +4,8 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
 <div align="center"><img src="attachments/README/cube_level_3.png" width="500"/></div>
 
 ## Code
+- [pyOpenSubdiv @ PyPi](https://pypi.org/project/pyOpenSubdiv/)
+  - `pip install pyOpenSubdiv`
 - [ ] Discuss 
 
 ## General requirements:
@@ -216,4 +218,10 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
 - [ ] Implement 
 
 ## Error Handling and Crash Prevention 
+- [ ] Implement 
+
+## CI/CD Build and Deploy pipeline 
+- [ ] Implement 
+
+## Unit Testing
 - [ ] Implement 

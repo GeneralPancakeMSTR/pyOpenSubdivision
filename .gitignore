@@ -3,8 +3,10 @@ glfw*/
 OpenSubdiv/
 .vscode/
 .vs/
+
 build/
 pyOpenSubdiv.egg-info/
+dist/
 
 !ctypes_OpenSubdiv/
 ctypes_OpenSubdiv/x64/
