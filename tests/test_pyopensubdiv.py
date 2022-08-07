@@ -3,7 +3,7 @@ from itertools import chain
 
 try:
     from pyOpenSubdiv.pysubdivision import pysubdivide
-    print('Successfully import pyOpenSubdiv')
+    print('Successfully imported pyOpenSubdiv')
 except: 
     print('Failed to import pyOpenSubdiv. Try to load files from this directory.')
     import numpy as np 
@@ -12,8 +12,9 @@ except:
     from sys import platform 
     
     def load_library():
+        here = os.path.dirname(os.path.abspath(__file__))
         if platform == 'linux' or platform == 'linux2':
-            OpenSubdiv_clib = ctypes.CDLL(os.path.join(os.path.dirname(__file__),'ctypes_OpenSubdiv.so'))
+            OpenSubdiv_clib = ctypes.CDLL(os.path.join(here,'ctypes_OpenSubdiv.so'))
         elif platform == 'darwin':
             # OSX 
             pass

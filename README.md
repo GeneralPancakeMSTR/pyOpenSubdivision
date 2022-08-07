@@ -80,10 +80,12 @@ Note that when updating, it looks like it is necessary to either increment the v
     g++ ctypes_subdivider.cpp -L/usr/local/lib/ -l:libosdGPU.a -l:libosdCPU.a -o ctypes_OpenSubdiv.so -fPIC -shared
     ```
     Note that `-L/usr/local/lib/` is unnecessary, but included for reference purposes. 
-
-7. Test 
+7. Test:
+    
+    Run `test_pyopensubdiv.py` (`<this repo>/tests/test_pyopensubdiv.py`), with `ctypes_OpenSubdiv.so` in the same directory.
     ```shell
-    $ python3 ctypes_pyOpenSubdiv.py 
+    $ python3 test_pyopensubdiv.py
+    Failed to import pyOpenSubdiv. Try to load files from this directory.
     v [-0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
     v [0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
     v [-0.2777777910232544, 0.2777777910232544, 0.2777777910232544]
@@ -191,45 +193,47 @@ Note that when updating, it looks like it is necessary to either increment the v
         Right-click Solution -> Properties -> Linker -> Input -> Additional Dependencies -> osdCPU.lib;oscGPU.lib
         ```
 8. Build the solution (`Build -> Build Solution`), which should create a `ctypes_OpenSubdiv.dll` file at `x64\Release\`. 
-9. Test:
-   - Move the `ctypes_pyOpenSubdivision.dll` into the same directory as `ctypes_pyOpenSubdiv.py`.
-   - Run `ctypes_pyOpenSubdiv.py`
-        ```
-        $ python .\ctypes_pyOpenSubdiv.py
-        v [-0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
-        v [0.2777777910232544, -0.2777777910232544, 0.2777777910232544]  
-        v [-0.2777777910232544, 0.2777777910232544, 0.2777777910232544]  
-        v [0.2777777910232544, 0.2777777910232544, 0.2777777910232544]   
-        v [-0.2777777910232544, 0.2777777910232544, -0.2777777910232544] 
-        v [0.2777777910232544, 0.2777777910232544, -0.2777777910232544]  
-        v [-0.2777777910232544, -0.2777777910232544, -0.2777777910232544]
-        v [0.2777777910232544, -0.2777777910232544, -0.2777777910232544] 
-        v [0.0, 0.0, 0.5]
-        v [0.0, 0.5, 0.0]
-        ...
-        e [0, 14]
-        e [0, 25]
-        e [1, 15]
-        e [2, 17]
-        e [3, 16]
-        e [3, 18]
-        e [4, 20]
-        e [5, 19]
-        e [5, 21]
-        e [6, 23]
-        ...
-        f [0, 14, 8, 17]
-        f [14, 1, 15, 8]
-        f [8, 15, 3, 16]
-        f [17, 8, 16, 2]
-        f [2, 16, 9, 20]
-        f [16, 3, 18, 9]
-        f [9, 18, 5, 19]
-        f [20, 9, 19, 4]
-        f [4, 19, 10, 23]
-        f [19, 5, 21, 10]
-        ...
-        ```
+9. Test:   
+
+    Run `test_pyopensubdiv.py` (`<this repo>/tests/test_pyopensubdiv.py`), with `ctypes_OpenSubdiv.dll` in the same directory.
+
+    ```
+    $ python .\test_pyopensubdiv.py
+    Failed to import pyOpenSubdiv. Try to load files from this directory.
+    v [-0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
+    v [0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
+    v [-0.2777777910232544, 0.2777777910232544, 0.2777777910232544]
+    v [0.2777777910232544, 0.2777777910232544, 0.2777777910232544]
+    v [-0.2777777910232544, 0.2777777910232544, -0.2777777910232544]
+    v [0.2777777910232544, 0.2777777910232544, -0.2777777910232544]
+    v [-0.2777777910232544, -0.2777777910232544, -0.2777777910232544]
+    v [0.2777777910232544, -0.2777777910232544, -0.2777777910232544]
+    v [0.0, 0.0, 0.5]
+    v [0.0, 0.5, 0.0]
+    ...
+    e [0, 14]
+    e [0, 25]
+    e [1, 15]
+    e [2, 17]
+    e [3, 16]
+    e [3, 18]
+    e [4, 20]
+    e [5, 19]
+    e [5, 21]
+    e [6, 23]
+    ...
+    f [0, 14, 8, 17]
+    f [14, 1, 15, 8]
+    f [8, 15, 3, 16]
+    f [17, 8, 16, 2]
+    f [2, 16, 9, 20]
+    f [16, 3, 18, 9]
+    f [9, 18, 5, 19]
+    f [20, 9, 19, 4]
+    f [4, 19, 10, 23]
+    f [19, 5, 21, 10]
+    ...
+    ```
 
 ## [Sverchok](https://github.com/nortikin/sverchok) Integration 
 - [x] `+ nodes/modifier_change/opensubdivide.py`
@@ -303,8 +307,6 @@ Note that when updating, it looks like it is necessary to either increment the v
 
 - [x] `+ docs/nodes/modifier_change/opensubdivide.rst`
   - `OpenSubdiv` (`opensubdivide.py`) node documentation. 
-
-
 
 - [x] Test 
   - [x] Install successfully. 
