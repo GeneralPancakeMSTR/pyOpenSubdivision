@@ -8,6 +8,16 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
   - `pip install pyOpenSubdiv`
 - [ ] Discuss 
 
+## Uploading to PyPi
+I followed [this guide](https://www.freecodecamp.org/news/build-your-first-python-package/). Pretty simple, at any rate: 
+```
+python3 setup.py sdist bdist_wheel
+twine upload dist/*
+```
+Note that when updating, it looks like it is necessary to either increment the version number in `setup.py`, or delete the existing version on PyPi and reupload. 
+
+## Building 
+
 ## General requirements:
 - [CMake](http://www.cmake.org)
 - [Python 3.8+](https://www.python.org/downloads/)
@@ -59,12 +69,19 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
     ├── libosdGPU.so -> libosdGPU.so.3.4.4
     └── libosdGPU.so.3.4.4
     ```
-1. Compile (compile `static`, not `shared`, to include the `losd` libraries in the binary)    
-    ```
-    g++ ctypes_subdivider.cpp -losdGPU -losdCPU -o ctypes_OpenSubdiv.so -fPIC -static
-    ```
+6. Compile
 
-2. Test 
+    This **does not** work (does not compile the `osd` libraries statically? Throws the error `OSError: libosdCPU.so.3.4.4: cannot open shared object file: No such file or directory` when trying to import `ctypes_OpenSubdiv.so` in e.g. `load_library.py`)
+    ```
+    g++ ctypes_subdivider.cpp -losdGPU -losdCPU -o ctypes_OpenSubdiv.so -fPIC -shared
+    ```
+    This ***seems*** to work (compiles the static `osd` `.a`  libraries into `ctypes_OpenSubdiv.so`?) (compile syntax courtesy [this SE answer](https://stackoverflow.com/a/17029312/2391876))
+    ```
+    g++ ctypes_subdivider.cpp -L/usr/local/lib/ -l:libosdGPU.a -l:libosdCPU.a -o ctypes_OpenSubdiv.so -fPIC -shared
+    ```
+    Note that `-L/usr/local/lib/` is unnecessary, but included for reference purposes. 
+
+7. Test 
     ```shell
     $ python3 ctypes_pyOpenSubdiv.py 
     v [-0.2777777910232544, -0.2777777910232544, 0.2777777910232544]

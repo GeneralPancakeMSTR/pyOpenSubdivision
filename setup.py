@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 # import distutils.sysconfig
 
 NAME = 'pyOpenSubdiv'
-VERSION = '0.0.1'
+# VERSION = '0.0.1'
+VERSION = '0.0.2'
 DESCRIPTION = 'Python Catmull-Clark Subdivision.'
 LONG_DESCRIPTION = 'A Python wrapper for the OpenSubdiv C++ Library far topology refiner.'
 
-# Also needs 
+# Also needs (maybe)
 # sudo apt-get install libatlas-base-dev (https://stackoverflow.com/questions/53347759/importerror-libcblas-so-3-cannot-open-shared-object-file-no-such-file-or-dire)
-
 
 # import site
 # import sys
