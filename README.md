@@ -59,10 +59,11 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
     ├── libosdGPU.so -> libosdGPU.so.3.4.4
     └── libosdGPU.so.3.4.4
     ```
-1. Compile 
+1. Compile (compile `static`, not `shared`, to include the `losd` libraries in the binary)    
     ```
-    g++ ctypes_subdivider.cpp -losdGPU -losdCPU -o ctypes_OpenSubdiv.so -fPIC -shared
+    g++ ctypes_subdivider.cpp -losdGPU -losdCPU -o ctypes_OpenSubdiv.so -fPIC -static
     ```
+
 2. Test 
     ```shell
     $ python3 ctypes_pyOpenSubdiv.py 
@@ -213,6 +214,88 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
         ...
         ```
 
+## [Sverchok](https://github.com/nortikin/sverchok) Integration 
+- [x] `+ nodes/modifier_change/opensubdivide.py`
+  - The `OpenSubdiv` node implementation. 
+  - Imports `pyOpenSubdiv`.
+
+- [x] `m dependencies.py`
+  - Add `pyOpenSubdiv` as Sverchok optional dependency. 
+    ```py
+    # dependencies.py
+    ...
+    pyOpenSubdiv_d = sv_dependencies["pyOpenSubdiv"] = SvDependency("pyOpenSubdiv","https://github.com/GeneralPancakeMSTR/pyOpenSubdivision")
+    pyOpenSubdiv_d.pip_installable = True
+    try:
+        import pyOpenSubdiv
+        pyOpenSubdiv_d.message = "pyOpenSubdiv package is available"
+        pyOpenSubdiv_d.module = pyOpenSubdiv
+    except ImportError:
+        pyOpenSubdiv_d.message = "sv: pyOpenSubdiv package is not available, Catmull-Clark subdivision will not be available"
+        info(pyOpenSubdiv_d.message)
+        pyOpenSubdiv = None 
+    ...
+    ```
+
+- [x] `m settings.py`
+  - Draw the `pyOpenSubdiv` dependency installation box in the Sverchok Preferences "Extra Nodes" tab. 
+    ```py
+    # settings.py
+    ...
+    draw_message(box, "scipy")
+    draw_message(box, "geomdl")
+    draw_message(box, "skimage")
+    draw_message(box, "mcubes")
+    draw_message(box, "circlify")
+    draw_message(box, "cython")
+    draw_message(box, "numba")
+    draw_message(box, "pyOpenSubdiv") # Add option to install pyOpenSubdiv
+    ...
+    ```
+
+- [x] `m index.md`
+  - Add the `OpenSubdiv` node to the Sverchok node menu.
+    ```md
+    ## Modifier Make
+        LineConnectNodeMK2
+        ---
+        SvOpenSubdivideNode <!-- Add OpenSubdiv node to Sverchok menu  -->
+        SvSubdivideNodeMK2
+        SvSubdivideToQuadsNode
+        SvOffsetLineNode
+        SvContourNode
+        ---
+        SvDualMeshNode
+        SvDiamondMeshNode
+        SvClipVertsNode
+        ---
+        SvBevelCurveNode
+        SvAdaptiveEdgeNode
+        SvAdaptivePolygonsNodeMk3
+        SvDuplicateAlongEdgeNode
+        SvFractalCurveNode
+        SvFrameworkNode
+        SvSolidifyNodeMk2
+        SvWireframeNode
+        SvPipeNode
+        SvMatrixTubeNode
+    ```
+
+- [x] `m docs/nodes/modifier_change/modifier_change_index.rst`
+  - Added `opensubdivide` node.
+
+- [x] `+ docs/nodes/modifier_change/opensubdivide.rst`
+  - `OpenSubdiv` (`opensubdivide.py`) node documentation. 
+
+
+
+- [x] Test 
+  - [x] Install successfully. 
+    <div align="center"><img src="attachments/README/sverchok_install.gif" width=""/></div>
+  - [x] Test `OpenSubdiv` node. 
+    <div align="center"><img src="attachments/README/sverchok_test.gif" width=""/></div>
+
+
 # ToDo 
 ## Building on OS X
 - [ ] Implement 
@@ -225,3 +308,9 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
 
 ## Unit Testing
 - [ ] Implement 
+
+
+
+
+
+

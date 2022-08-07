@@ -6,6 +6,10 @@ VERSION = '0.0.1'
 DESCRIPTION = 'Python Catmull-Clark Subdivision.'
 LONG_DESCRIPTION = 'A Python wrapper for the OpenSubdiv C++ Library far topology refiner.'
 
+# Also needs 
+# sudo apt-get install libatlas-base-dev (https://stackoverflow.com/questions/53347759/importerror-libcblas-so-3-cannot-open-shared-object-file-no-such-file-or-dire)
+
+
 # import site
 # import sys
 # print(site.USER_BASE)
@@ -19,7 +23,7 @@ setup(
     packages = find_packages(),
     include_package_data=True,
     package_data={f'{NAME}.clib':['*.so','*.dll']}, # https://stackoverflow.com/questions/70334648/how-to-correctly-install-data-files-with-setup-py
-    install_requires = ["numpy"],
+    install_requires = ["numpy"],    
     keywords = ['subdivision','opensubdiv','Catmull-Clark','hard-surface'],
     classifiers= [
         "Development Status :: 3 - Alpha",
