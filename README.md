@@ -236,9 +236,12 @@ Note that when updating, it looks like it is necessary to either increment the v
     ```
 
 ## [Sverchok](https://github.com/nortikin/sverchok) Integration 
-- [x] `+ nodes/modifier_change/opensubdivide.py`
-  - The `OpenSubdiv` node implementation. 
+- [x] ~~`+ nodes/modifier_change/opensubdivide.py`~~ `+ nodes/modifier_change/opensubdivision.py`
+  - The ~~`OpenSubdiv`~~ `OpenSubdivision` node implementation. 
+    - My preference would be to name it `Subdivision`, but I feel this could cause confusion for the user trying to choose between the `Subdivide` or `Subdivision` nodes.
   - Imports `pyOpenSubdiv`.
+  - `SvOpenSubdivideNode` -> `SvOpenSubdivisionNode`
+  - `opensubdivide.py` -> `opensubdivision.py`
 
 - [x] `m dependencies.py`
   - Add `pyOpenSubdiv` as Sverchok optional dependency. 
@@ -252,11 +255,13 @@ Note that when updating, it looks like it is necessary to either increment the v
         pyOpenSubdiv_d.message = "pyOpenSubdiv package is available"
         pyOpenSubdiv_d.module = pyOpenSubdiv
     except ImportError:
-        pyOpenSubdiv_d.message = "sv: pyOpenSubdiv package is not available, Catmull-Clark subdivision will not be available"
+        pyOpenSubdiv_d.message = "sv: pyOpenSubdiv package is not available, the OpenSubdivision node (Catmull-Clark subdivision) will not be available"
         info(pyOpenSubdiv_d.message)
         pyOpenSubdiv = None 
     ...
     ```
+  - Minor change to "not available" message. 
+
 
 - [x] `m settings.py`
   - Draw the `pyOpenSubdiv` dependency installation box in the Sverchok Preferences "Extra Nodes" tab. 
@@ -280,7 +285,7 @@ Note that when updating, it looks like it is necessary to either increment the v
     ## Modifier Make
         LineConnectNodeMK2
         ---
-        SvOpenSubdivideNode <!-- Add OpenSubdiv node to Sverchok menu  -->
+        SvOpenSubdivisionNode <!-- Add OpenSubdiv node to Sverchok menu  -->
         SvSubdivideNodeMK2
         SvSubdivideToQuadsNode
         SvOffsetLineNode
@@ -301,12 +306,15 @@ Note that when updating, it looks like it is necessary to either increment the v
         SvPipeNode
         SvMatrixTubeNode
     ```
+  - Update reference name to `SvOpenSubdivisionNode`.
 
 - [x] `m docs/nodes/modifier_change/modifier_change_index.rst`
-  - Added `opensubdivide` node.
+  - Added ~~`opensubdivide`~~ `opensubdivision` node.
 
-- [x] `+ docs/nodes/modifier_change/opensubdivide.rst`
-  - `OpenSubdiv` (`opensubdivide.py`) node documentation. 
+- [x] ~~`+ docs/nodes/modifier_change/opensubdivide.rst`~~ `+ docs/nodes/modifier_change/opensubdivision.rst`
+  - ~~`OpenSubdiv`~~ `OpenSubdivision` (`opensubdivision.py`) node documentation. 
+  - [ ] Need to update images to reflect new node name, at some point. 
+  - Fixed typo.
 
 - [x] Test 
   - [x] Install successfully. 
