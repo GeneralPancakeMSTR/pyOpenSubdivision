@@ -4,6 +4,10 @@ OpenSubdiv/
 .vscode/
 .vs/
 
+__pycache__/
+.ipython
+.cache
+
 build/
 pyOpenSubdiv.egg-info/
 dist/

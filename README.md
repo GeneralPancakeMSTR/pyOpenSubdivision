@@ -3,6 +3,25 @@ A Python wrapper (implemented using [`ctypes`](https://docs.python.org/3/library
 
 <div align="center"><img src="attachments/README/cube_level_3.png" width="500"/></div>
 
+## Updates 
+- Added keyword arguments (verbose  (`-v`) and level (`-l <N>`)) to `ctypes_subdivider.cpp` (these are handled by `subdivider::settings`). 
+- `ctypes_subdivider.cpp` handles level 0 subdivision better now. 
+  - Within the `refine_topology` function, an assertion is made that the number of vertices per face of the refined mesh is 4, i.e. it consists entirely of quads.
+  ```c++
+  assert(fverts.size() == 4);
+  ```
+  This assertion is only strictly true if the mesh is actually subdivided (`maxlevel > 0`). Otherwise, it is possible to feed a mesh containing ngons, which if not subdivided (evaluated for `maxlevel = 0`), will fail the all quads assertion, crashing the code. 
+
+  It would seem reasonable to simply ignore the all-quads assertion, but the block that constructs the edges (`for (int i = 0; i < nn_faces; i++) { ... }`) for the refined topology relies on the assumption. Furthermore, ignoring the all-quads assertion would involve returning (to python) a set of faces where each could contain an arbitrary number of vertices, which is very difficult (to the extent that I could not figure out a solution). Conceivably, it would be possible to use the `vertsPerFace` data to reconstruct a flattened (1D) `faceVerts` list; but ultimately, any solution tends to involve reconstructing information that was passed into the refiner in the first place (as opposed to simply passing it through, which is easier said than done), which is not optimal. 
+
+  My solution to this problem was to create a method (`subdivider::edges_only`) that only constructs edges from the incoming mesh data, and can handle faces containing an arbitrary number of vertices. This method only runs if `maxlevel <= 0`. 
+
+  In terms of Sverchok/Blender, the intention here is to have the node generate valid topology when it is *not* muted *and* the subdivision level is 0. When the node *is* muted, the incoming mesh data should be passed directly through (with no edges created), but this can be implemented on the python side. 
+
+  Note that I would use the `edges_only` function for `maxlevel > 0`, but the refined face vertices (`fverts`) are extracted one-by-one (from `reflastlevel`), so this would be slightly tricky to implement, or at least require a for-loop each for extracting the refined faces and constructing the edges from them, where the current solution does both operations in the same loop. For these reasons, I have stuck with the current approach, even though it lacks elegance. 
+
+- Testing is handled a little better now, with the test function integrated directly into the module now. The proper way is still unit tests and CI/CD, but I think this is a step in the right direction. Testing example in this readme have been updated accordingly. 
+
 ## Code
 - [pyOpenSubdiv @ PyPi](https://pypi.org/project/pyOpenSubdiv/)
   - `pip install pyOpenSubdiv`
@@ -80,12 +99,167 @@ Note that when updating, it looks like it is necessary to either increment the v
     g++ ctypes_subdivider.cpp -L/usr/local/lib/ -l:libosdGPU.a -l:libosdCPU.a -o ctypes_OpenSubdiv.so -fPIC -shared
     ```
     Note that `-L/usr/local/lib/` is unnecessary, but included for reference purposes. 
+
+    Some additional convenience commands: 
+
+    Compile directly into pyOpenSubdiv/clib: 
+    ```
+    g++ ctypes_subdivider.cpp -L/usr/local/lib/ -l:libosdGPU.a -l:libosdCPU.a -o package/pyOpenSubdiv/clib/ctypes_OpenSubdiv.so -fPIC -shared
+    ```
+    Compile to executable:
+    ```
+    g++ ctypes_subdivider.cpp -L/usr/local/lib/ -l:libosdGPU.a -l:libosdCPU.a -o ctypes_OpenSubdiv_executable
+    ```
+
 7. Test:
+
+    Testing `pyOpenSubdiv` on Linux now uses `docker`, which I installed following [this guide](https://www.zdnet.com/article/whats-new-in-libreoffice-and-how-do-you-install-it-on-macos/).
     
-    Run `test_pyopensubdiv.py` (`<this repo>/tests/test_pyopensubdiv.py`), with `ctypes_OpenSubdiv.so` in the same directory.
-    ```shell
-    $ python3 test_pyopensubdiv.py
-    Failed to import pyOpenSubdiv. Try to load files from this directory.
+    With `docker` installed, build the test image by running `docker build -t ubuntu_docker .` from within the `dockers` directory. Then, start the container by running `start_docker.sh` from the **root** of this repo. 
+
+    ```bash
+    $ ./start_docker.sh 
+    ```
+
+    The `start_docker.sh` shell script automatically installs the `pyOpenSubdiv` package to the container, and on exit deletes miscellaneous directories created from installing and running the module, and the container (note that deleting the module directories requires `sudo`). 
+
+    Start `IPython` (run `$ ipython` at the container terminal) (note that using `IPython` is technically optional, and it is only my preference to use it), import the `pyOpenSubdiv` module, load `pyOpenSubdiv.pysubdivision`, and run `pysubdivision.test_pysubdivide()`
+    
+    ```
+    In [2]: import pyOpenSubdiv
+    In [3]: from pyOpenSubdiv import pysubdivision
+    In [4]: pysubdivision.test_pysubdivide()
+    ```
+
+    `pysubdivision.test_pysubdivide()` should produce an output like the following (the `Runtime` tests will more than likely be different between instances and hardware)
+
+    ```ipython
+    In [4]: pysubdivision.test_pysubdivide()
+    Subdivision Tests
+    cube @ 0
+    suzanne @ 0
+    triangles @ 0
+    ngons @ 0
+    ngons2 @ 0
+    cube @ 1
+    suzanne @ 1
+    triangles @ 1
+    ngons @ 1
+    ngons2 @ 1
+    cube @ 2
+    suzanne @ 2
+    triangles @ 2
+    ngons @ 2
+    ngons2 @ 2
+
+    Verbose Test
+    maxlevel 1
+    New Vertices 26
+    v -0.277778 -0.277778 0.277778
+    v 0.277778 -0.277778 0.277778
+    v -0.277778 0.277778 0.277778
+    v 0.277778 0.277778 0.277778
+    v -0.277778 0.277778 -0.277778
+    v 0.277778 0.277778 -0.277778
+    v -0.277778 -0.277778 -0.277778
+    v 0.277778 -0.277778 -0.277778
+    v 0.000000 0.000000 0.500000
+    v 0.000000 0.500000 0.000000
+    v 0.000000 0.000000 -0.500000
+    v 0.000000 -0.500000 0.000000
+    v 0.500000 0.000000 0.000000
+    v -0.500000 0.000000 0.000000
+    v 0.000000 -0.375000 0.375000
+    v 0.375000 0.000000 0.375000
+    v 0.000000 0.375000 0.375000
+    v -0.375000 0.000000 0.375000
+    v 0.375000 0.375000 0.000000
+    v 0.000000 0.375000 -0.375000
+    v -0.375000 0.375000 0.000000
+    v 0.375000 0.000000 -0.375000
+    v 0.000000 -0.375000 -0.375000
+    v -0.375000 0.000000 -0.375000
+    v 0.375000 -0.375000 0.000000
+    v -0.375000 -0.375000 0.000000
+    e 0 14
+    e 0 25
+    e 1 15
+    e 2 17
+    e 3 16
+    e 3 18
+    e 4 20
+    e 5 19
+    e 5 21
+    e 6 23
+    e 7 22
+    e 7 24
+    e 8 17
+    e 9 20
+    e 10 23
+    e 11 25
+    e 12 15
+    e 13 23
+    e 14 8
+    e 14 1
+    e 14 11
+    e 15 8
+    e 15 3
+    e 16 8
+    e 16 2
+    e 16 9
+    e 17 0
+    e 17 13
+    e 18 9
+    e 18 5
+    e 18 12
+    e 19 9
+    e 19 4
+    e 19 10
+    e 20 2
+    e 20 13
+    e 21 10
+    e 21 7
+    e 21 12
+    e 22 10
+    e 22 6
+    e 22 11
+    e 23 4
+    e 24 11
+    e 24 1
+    e 24 12
+    e 25 6
+    e 25 13
+    f 1 15 9 18
+    f 15 2 16 9
+    f 9 16 4 17
+    f 18 9 17 3
+    f 3 17 10 21
+    f 17 4 19 10
+    f 10 19 6 20
+    f 21 10 20 5
+    f 5 20 11 24
+    f 20 6 22 11
+    f 11 22 8 23
+    f 24 11 23 7
+    f 7 23 12 26
+    f 23 8 25 12
+    f 12 25 2 15
+    f 26 12 15 1
+    f 2 25 13 16
+    f 25 8 22 13
+    f 13 22 6 19
+    f 16 13 19 4
+    f 7 26 14 24
+    f 26 1 18 14
+    f 14 18 3 21
+    f 24 14 21 5
+
+    Runtime
+    Cube: 0.478s @ 0 x 10000 
+    Cube: 1.941s @ 1 x 10000 
+    Cube: 5.102s @ 2 x 10000 
+
+    Output
     v [-0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
     v [0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
     v [-0.2777777910232544, 0.2777777910232544, 0.2777777910232544]
@@ -119,7 +293,30 @@ Note that when updating, it looks like it is necessary to either increment the v
     f [4, 19, 10, 23]
     f [19, 5, 21, 10]
     ...
+
+    static float g_verts[8][3] = { {-0.50f, -0.50f, 0.50f},
+    {0.50f, -0.50f, 0.50f},
+    {-0.50f, 0.50f, 0.50f},
+    {0.50f, 0.50f, 0.50f},
+    {-0.50f, 0.50f, -0.50f},
+    {0.50f, 0.50f, -0.50f},
+    {-0.50f, -0.50f, -0.50f},
+    {0.50f, -0.50f, -0.50f} };
+
+    static int g_nverts = 8, g_nfaces = 6;
+
+    static int g_vertsperface[6] = {4, 4, 4, 4, 4, 4};
+
+    static int g_vertIndices[24] = {
+    0, 1, 3, 2,
+    2, 3, 5, 4,
+    4, 5, 7, 6,
+    6, 7, 1, 0,
+    1, 7, 5, 3,
+    6, 0, 2, 4 };
     ```
+
+    The `pyOpenSubdiv` module may be uninstalled by running the command `python -m pip uninstall pyOpenSubdiv`. 
 
 ## Building on Windows ([Visual Studio](https://visualstudio.microsoft.com/))
 1. Install [General Requirements](#general-requirements).
@@ -195,11 +392,150 @@ Note that when updating, it looks like it is necessary to either increment the v
 8. Build the solution (`Build -> Build Solution`), which should create a `ctypes_OpenSubdiv.dll` file at `x64\Release\`. 
 9. Test:   
 
-    Run `test_pyopensubdiv.py` (`<this repo>/tests/test_pyopensubdiv.py`), with `ctypes_OpenSubdiv.dll` in the same directory.
+    Testing on Windows does *not* use a docker container, even though maybe it should, but instead involves directly installing the module from the `setup.py` file in the `package` directory. A valid `python` installation needs to be present on your machine for this test to work. 
+
+    Navigate to `<this repo>/package`, and install `pyOpenSubdiv` by running the command 
+    ```powershell
+    python -m pip install . 
+    ```
+
+    Then import `pyOpenSubdiv`, load `pyOpenSubdiv.pysubdivision`, and run `pysubdivision.test_pysubdivide()` (again, I am using `IPython` here, which is optional)
 
     ```
-    $ python .\test_pyopensubdiv.py
-    Failed to import pyOpenSubdiv. Try to load files from this directory.
+    In [1]: import pyOpenSubdiv
+    In [2]: from pyOpenSubdiv import pysubdivision
+    In [3]: pysubdivision.test_pysubdivide()
+    ```
+
+    `pysubdivision.test_pysubdivide()` should produce an output like 
+
+    ```ipython
+    In [3]: pysubdivision.test_pysubdivide()
+    Subdivision Tests
+    cube @ 0
+    suzanne @ 0
+    triangles @ 0
+    ngons @ 0
+    ngons2 @ 0
+    cube @ 1
+    suzanne @ 1
+    triangles @ 1
+    ngons @ 1
+    ngons2 @ 1
+    cube @ 2
+    suzanne @ 2
+    triangles @ 2
+    ngons @ 2
+    ngons2 @ 2
+
+    Verbose Test
+    maxlevel 1
+    New Vertices 26
+    v -0.277778 -0.277778 0.277778
+    v 0.277778 -0.277778 0.277778
+    v -0.277778 0.277778 0.277778
+    v 0.277778 0.277778 0.277778
+    v -0.277778 0.277778 -0.277778
+    v 0.277778 0.277778 -0.277778
+    v -0.277778 -0.277778 -0.277778
+    v 0.277778 -0.277778 -0.277778
+    v 0.000000 0.000000 0.500000
+    v 0.000000 0.500000 0.000000
+    v 0.000000 0.000000 -0.500000
+    v 0.000000 -0.500000 0.000000
+    v 0.500000 0.000000 0.000000
+    v -0.500000 0.000000 0.000000
+    v 0.000000 -0.375000 0.375000
+    v 0.375000 0.000000 0.375000
+    v 0.000000 0.375000 0.375000
+    v -0.375000 0.000000 0.375000
+    v 0.375000 0.375000 0.000000
+    v 0.000000 0.375000 -0.375000
+    v -0.375000 0.375000 0.000000
+    v 0.375000 0.000000 -0.375000
+    v 0.000000 -0.375000 -0.375000
+    v -0.375000 0.000000 -0.375000
+    v 0.375000 -0.375000 0.000000
+    v -0.375000 -0.375000 0.000000
+    e 0 14
+    e 0 25
+    e 1 15
+    e 2 17
+    e 3 16
+    e 3 18
+    e 4 20
+    e 5 19
+    e 5 21
+    e 6 23
+    e 7 22
+    e 7 24
+    e 8 17
+    e 9 20
+    e 10 23
+    e 11 25
+    e 12 15
+    e 13 23
+    e 14 8
+    e 14 1
+    e 14 11
+    e 15 8
+    e 15 3
+    e 16 8
+    e 16 2
+    e 16 9
+    e 17 0
+    e 17 13
+    e 18 9
+    e 18 5
+    e 18 12
+    e 19 9
+    e 19 4
+    e 19 10
+    e 20 2
+    e 20 13
+    e 21 10
+    e 21 7
+    e 21 12
+    e 22 10
+    e 22 6
+    e 22 11
+    e 23 4
+    e 24 11
+    e 24 1
+    e 24 12
+    e 25 6
+    e 25 13
+    f 1 15 9 18
+    f 15 2 16 9
+    f 9 16 4 17
+    f 18 9 17 3
+    f 3 17 10 21
+    f 17 4 19 10
+    f 10 19 6 20
+    f 21 10 20 5
+    f 5 20 11 24
+    f 20 6 22 11
+    f 11 22 8 23
+    f 24 11 23 7
+    f 7 23 12 26
+    f 23 8 25 12
+    f 12 25 2 15
+    f 26 12 15 1
+    f 2 25 13 16
+    f 25 8 22 13
+    f 13 22 6 19
+    f 16 13 19 4
+    f 7 26 14 24
+    f 26 1 18 14
+    f 14 18 3 21
+    f 24 14 21 5
+
+    Runtime
+    Cube: 0.104s @ 0 x 10000
+    Cube: 0.272s @ 1 x 10000
+    Cube: 0.620s @ 2 x 10000
+
+    Output
     v [-0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
     v [0.2777777910232544, -0.2777777910232544, 0.2777777910232544]
     v [-0.2777777910232544, 0.2777777910232544, 0.2777777910232544]
@@ -233,6 +569,27 @@ Note that when updating, it looks like it is necessary to either increment the v
     f [4, 19, 10, 23]
     f [19, 5, 21, 10]
     ...
+
+    static float g_verts[8][3] = { {-0.50f, -0.50f, 0.50f},
+    {0.50f, -0.50f, 0.50f},
+    {-0.50f, 0.50f, 0.50f},
+    {0.50f, 0.50f, 0.50f},
+    {-0.50f, 0.50f, -0.50f},
+    {0.50f, 0.50f, -0.50f},
+    {-0.50f, -0.50f, -0.50f},
+    {0.50f, -0.50f, -0.50f} };
+
+    static int g_nverts = 8, g_nfaces = 6;
+
+    static int g_vertsperface[6] = {4, 4, 4, 4, 4, 4};
+
+    static int g_vertIndices[24] = {
+    0, 1, 3, 2,
+    2, 3, 5, 4,
+    4, 5, 7, 6,
+    6, 7, 1, 0,
+    1, 7, 5, 3,
+    6, 0, 2, 4 };
     ```
 
 ## [Sverchok](https://github.com/nortikin/sverchok) Integration 
@@ -328,7 +685,8 @@ Note that when updating, it looks like it is necessary to either increment the v
 - [ ] Implement 
 
 ## Error Handling and Crash Prevention 
-- [ ] Implement 
+- Subdivision <= 0 should be handled better now. 
+- [ ] Identify and resolve new bugs. 
 
 ## CI/CD Build and Deploy pipeline 
 - [ ] Implement 

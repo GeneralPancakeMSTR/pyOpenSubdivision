@@ -3,7 +3,14 @@ from setuptools import setup, find_packages
 
 NAME = 'pyOpenSubdiv'
 # VERSION = '0.0.1'
-VERSION = '0.0.2'
+# Initial 
+# VERSION = '0.0.2'
+# ?
+VERSION = '0.0.3' # [ ] 
+# - A lot of changes associated with handling level <=0 subdivisions better.
+# - Some refactoring. 
+# - Added ctypes_subdivider.cpp flags maxlevel (-m <N>) and verbose (-v)
+# - Slightly better test framework, added some example topologies to try. 
 DESCRIPTION = 'Python Catmull-Clark Subdivision.'
 LONG_DESCRIPTION = 'A Python wrapper for the OpenSubdiv C++ Library far topology refiner.'
 
