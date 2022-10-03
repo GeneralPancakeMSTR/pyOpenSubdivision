@@ -676,7 +676,7 @@ Note that when updating, it looks like it is necessary to either increment the v
 - [x] `docs/nodes/modifier_change/modifier_change_index.rst`
   - Added `opensubdivision` node.
 
-- [ ] `docs/nodes/modifier_change/opensubdivision.rst`
+- [x] `docs/nodes/modifier_change/opensubdivision.rst`
   - `Catmull-Clark Subdivision` (`opensubdivision.py`) node documentation. 
   - [x] Install successfully (old node)
     <div align="center"><img src="attachments/README/sverchok_install.gif" width=""/></div>
