@@ -673,20 +673,16 @@ Note that when updating, it looks like it is necessary to either increment the v
         SvMatrixTubeNode
     ```  
 
-- [ ] `docs/nodes/modifier_change/modifier_change_index.rst`
+- [x] `docs/nodes/modifier_change/modifier_change_index.rst`
   - Added `opensubdivision` node.
 
-- [ ] `docs/nodes/modifier_change/CatmullClarkSubdivision.rst`
+- [ ] `docs/nodes/modifier_change/opensubdivision.rst`
   - `Catmull-Clark Subdivision` (`opensubdivision.py`) node documentation. 
-  - [ ] Need to update images to reflect new node name, at some point. 
-  - Fixed typo.
-
-- [ ] Test 
-  - [x] Install successfully. 
+  - [x] Install successfully (old node)
     <div align="center"><img src="attachments/README/sverchok_install.gif" width=""/></div>
-  - [x] Test `OpenSubdiv` node. 
+  - [x] Test Node (old node)
     <div align="center"><img src="attachments/README/sverchok_test.gif" width=""/></div>
-  - [x] New tests, with renamed node, showing better case handling. 
+  - [x] New tests, with renamed ("Catmull-Clark Subdivision") node, demonstrating better case handling. 
     <div align="center"><img src="attachments/README/sverchok_OSD_vector_test.png" width=""/></div>
     <div align="center"><img src="attachments/README/sverchok_OSD_many_bodies.png" width=""/></div>
     <div align="center"><img src="attachments/README/sverchok_OSD_level0_ngons.png" width=""/></div>
