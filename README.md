@@ -593,14 +593,25 @@ Note that when updating, it looks like it is necessary to either increment the v
     ```
 
 ## [Sverchok](https://github.com/nortikin/sverchok) Integration 
-- [x] ~~`+ nodes/modifier_change/opensubdivide.py`~~ `+ nodes/modifier_change/opensubdivision.py`
-  - The ~~`OpenSubdiv`~~ `OpenSubdivision` node implementation. 
-    - My preference would be to name it `Subdivision`, but I feel this could cause confusion for the user trying to choose between the `Subdivide` or `Subdivision` nodes.
-  - Imports `pyOpenSubdiv`.
-  - `SvOpenSubdivideNode` -> `SvOpenSubdivisionNode`
-  - `opensubdivide.py` -> `opensubdivision.py`
+- These links are useful for dealing with syncing forks up with master repos. 
+  - [How do I update or sync a forked repository on GitHub?](https://stackoverflow.com/a/7244456/2391876)
+  - [Git Merge Master into Branch](https://www.togaware.com/linux/survivor/Git_Merge_Master_into.html)
+  - Also the `.git/config` file needs to be configured properly. It's all very confusing and annoying and I wish it made more sense. 
 
-- [x] `m dependencies.py`
+- Make sure that `pyOpenSubdiv` is not installed for Blender's python 
+  - Blender's python is at `C:\Program Files (x86)\Steam\steamapps\common\Blender\3.4\python\bin>` (or similar)
+  - Installed packages are at `C:\Program Files (x86)\Steam\steamapps\common\Blender\3.4\python\lib\site-packages`
+  - `pyOpenSubdiv` may be uninstalled by running e.g. `./python.exe -m pip uninstall pyOpenSubdiv` from within the `C:\Program Files (x86)\Steam\steamapps\common\Blender\3.4\python\bin>` (or similar) folder. 
+
+- [x] Rename: `Catmull-Clark Subdivision`
+- [x] `nodes/modifier_change/opensubdivision.py`
+  - Changing the name to `Catmull-Clark Subdivision`, but I'm leaving the python script as `opensubdivision.py`.
+  - The `Catmull-Clark Subdivision` node implementation. 
+  - Imports `pyOpenSubdiv`.
+  - `SvOpenSubdivisionNode` -> `SvCatmullClarkSubdivisionNode`
+  - `opensubdivision.py`
+
+- [x] `dependencies.py`
   - Add `pyOpenSubdiv` as Sverchok optional dependency. 
     ```py
     # dependencies.py
@@ -612,15 +623,13 @@ Note that when updating, it looks like it is necessary to either increment the v
         pyOpenSubdiv_d.message = "pyOpenSubdiv package is available"
         pyOpenSubdiv_d.module = pyOpenSubdiv
     except ImportError:
-        pyOpenSubdiv_d.message = "sv: pyOpenSubdiv package is not available, the OpenSubdivision node (Catmull-Clark subdivision) will not be available"
+        pyOpenSubdiv_d.message = "sv: pyOpenSubdiv package is not available, the Catmull-Clark Subdivision will not be available"
         info(pyOpenSubdiv_d.message)
         pyOpenSubdiv = None 
     ...
     ```
-  - Minor change to "not available" message. 
 
-
-- [x] `m settings.py`
+- [x] (No Change) `settings.py`
   - Draw the `pyOpenSubdiv` dependency installation box in the Sverchok Preferences "Extra Nodes" tab. 
     ```py
     # settings.py
@@ -636,13 +645,13 @@ Note that when updating, it looks like it is necessary to either increment the v
     ...
     ```
 
-- [x] `m index.md`
-  - Add the `OpenSubdiv` node to the Sverchok node menu.
+- [x] `index.md`
+  - Add the `Catmull-Clark Subdivision` node to the Sverchok node menu.
     ```md
     ## Modifier Make
         LineConnectNodeMK2
         ---
-        SvOpenSubdivisionNode <!-- Add OpenSubdiv node to Sverchok menu  -->
+        SvOpenSubdivisionNode -> SvCatmullClarkSubdivisionNode
         SvSubdivideNodeMK2
         SvSubdivideToQuadsNode
         SvOffsetLineNode
@@ -662,22 +671,27 @@ Note that when updating, it looks like it is necessary to either increment the v
         SvWireframeNode
         SvPipeNode
         SvMatrixTubeNode
-    ```
-  - Update reference name to `SvOpenSubdivisionNode`.
+    ```  
 
-- [x] `m docs/nodes/modifier_change/modifier_change_index.rst`
-  - Added ~~`opensubdivide`~~ `opensubdivision` node.
+- [ ] `docs/nodes/modifier_change/modifier_change_index.rst`
+  - Added `opensubdivision` node.
 
-- [x] ~~`+ docs/nodes/modifier_change/opensubdivide.rst`~~ `+ docs/nodes/modifier_change/opensubdivision.rst`
-  - ~~`OpenSubdiv`~~ `OpenSubdivision` (`opensubdivision.py`) node documentation. 
+- [ ] `docs/nodes/modifier_change/CatmullClarkSubdivision.rst`
+  - `Catmull-Clark Subdivision` (`opensubdivision.py`) node documentation. 
   - [ ] Need to update images to reflect new node name, at some point. 
   - Fixed typo.
 
-- [x] Test 
+- [ ] Test 
   - [x] Install successfully. 
     <div align="center"><img src="attachments/README/sverchok_install.gif" width=""/></div>
   - [x] Test `OpenSubdiv` node. 
     <div align="center"><img src="attachments/README/sverchok_test.gif" width=""/></div>
+  - [x] New tests, with renamed node, showing better case handling. 
+    <div align="center"><img src="attachments/README/sverchok_OSD_vector_test.png" width=""/></div>
+    <div align="center"><img src="attachments/README/sverchok_OSD_many_bodies.png" width=""/></div>
+    <div align="center"><img src="attachments/README/sverchok_OSD_level0_ngons.png" width=""/></div>
+    <div align="center"><img src="attachments/README/sverchok_OSD_node_mute.png" width=""/></div>
+
 
 
 # ToDo 
