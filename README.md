@@ -597,6 +597,15 @@ Note that when updating, it looks like it is necessary to either increment the v
   - [How do I update or sync a forked repository on GitHub?](https://stackoverflow.com/a/7244456/2391876)
   - [Git Merge Master into Branch](https://www.togaware.com/linux/survivor/Git_Merge_Master_into.html)
   - Also the `.git/config` file needs to be configured properly. It's all very confusing and annoying and I wish it made more sense. 
+  - I think the sync process is like this 
+```
+git fetch upstream 
+git checkout master 
+git rebase upstream/master 
+git checkout <branch> (e.g. sverchok_OpenSubdiv_2)
+git merge <branch to merge> (e.g. master)
+git push
+```
 
 - Make sure that `pyOpenSubdiv` is not installed for Blender's python 
   - Blender's python is at `C:\Program Files (x86)\Steam\steamapps\common\Blender\3.4\python\bin>` (or similar)
@@ -604,14 +613,16 @@ Note that when updating, it looks like it is necessary to either increment the v
   - `pyOpenSubdiv` may be uninstalled by running e.g. `./python.exe -m pip uninstall pyOpenSubdiv` from within the `C:\Program Files (x86)\Steam\steamapps\common\Blender\3.4\python\bin>` (or similar) folder. 
 
 - [x] Rename: `Catmull-Clark Subdivision`
+- [x] Change `bl_idname` back to "`SvOpenSubdivisionNode`"
+
 - [x] `nodes/modifier_change/opensubdivision.py`
   - Changing the name to `Catmull-Clark Subdivision`, but I'm leaving the python script as `opensubdivision.py`.
   - The `Catmull-Clark Subdivision` node implementation. 
   - Imports `pyOpenSubdiv`.
-  - `SvOpenSubdivisionNode` -> `SvCatmullClarkSubdivisionNode`
+  - `SvCatmullClarkSubdivisionNode` -> `SvOpenSubdivisionNode`
   - `opensubdivision.py`
 
-- [x] `dependencies.py`
+- [x] (No Change) `dependencies.py`
   - Add `pyOpenSubdiv` as Sverchok optional dependency. 
     ```py
     # dependencies.py
@@ -623,7 +634,7 @@ Note that when updating, it looks like it is necessary to either increment the v
         pyOpenSubdiv_d.message = "pyOpenSubdiv package is available"
         pyOpenSubdiv_d.module = pyOpenSubdiv
     except ImportError:
-        pyOpenSubdiv_d.message = "sv: pyOpenSubdiv package is not available, the Catmull-Clark Subdivision will not be available"
+        pyOpenSubdiv_d.message = "sv: pyOpenSubdiv package is not available, the Catmull-Clark Subdivision node will not be available"
         info(pyOpenSubdiv_d.message)
         pyOpenSubdiv = None 
     ...
@@ -651,7 +662,7 @@ Note that when updating, it looks like it is necessary to either increment the v
     ## Modifier Make
         LineConnectNodeMK2
         ---
-        SvOpenSubdivisionNode -> SvCatmullClarkSubdivisionNode
+        SvCatmullClarkSubdivisionNode -> SvOpenSubdivisionNode
         SvSubdivideNodeMK2
         SvSubdivideToQuadsNode
         SvOffsetLineNode
@@ -697,6 +708,7 @@ Note that when updating, it looks like it is necessary to either increment the v
 ## Error Handling and Crash Prevention 
 - Subdivision <= 0 should be handled better now. 
 - [ ] Identify and resolve new bugs. 
+- [ ] Handle case where user accidentally inputs a Face list that refers to vertices that do not exist in the vertices list (e.g. Faces refer to vert 7, where there are only 5 vertices). 
 
 ## CI/CD Build and Deploy pipeline 
 - [ ] Implement 
